@@ -18,6 +18,11 @@ export default {
 			}
 		},
 		extend: {
+			borderRadius: {
+				lg: 'var(--radius)',
+				md: 'calc(var(--radius) - 2px)',
+				sm: 'calc(var(--radius) - 4px)'
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -61,12 +66,15 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
-			},
-			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				},
+				// DoWhistle Chat Colors
+				'chat-bubble-user': 'hsl(var(--chat-bubble-user))',
+				'chat-bubble-user-foreground': 'hsl(var(--chat-bubble-user-foreground))',
+				'chat-bubble-bot': 'hsl(var(--chat-bubble-bot))',
+				'chat-bubble-bot-foreground': 'hsl(var(--chat-bubble-bot-foreground))',
+				'chat-background': 'hsl(var(--chat-background))',
+				'chat-header': 'hsl(var(--chat-header))',
+				'chat-header-foreground': 'hsl(var(--chat-header-foreground))'
 			},
 			keyframes: {
 				'accordion-down': {
@@ -84,11 +92,44 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'slide-in-up': {
+					'0%': { 
+						opacity: '0', 
+						transform: 'translateY(10px) scale(0.95)' 
+					},
+					'100%': { 
+						opacity: '1', 
+						transform: 'translateY(0) scale(1)' 
+					}
+				},
+				'fade-in': {
+					'0%': { opacity: '0' },
+					'100%': { opacity: '1' }
+				},
+				'bounce': {
+					'0%, 20%, 53%, 80%, 100%': { transform: 'translateY(0)' },
+					'40%, 43%': { transform: 'translateY(-8px)' },
+					'70%': { transform: 'translateY(-4px)' },
+					'90%': { transform: 'translateY(-2px)' }
+				},
+				'typing': {
+					'0%': { width: '0' },
+					'100%': { width: '100%' }
+				},
+				'pulse-gentle': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.7' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'slide-in-up': 'slide-in-up 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+				'fade-in': 'fade-in 0.2s ease-out',
+				'bounce': 'bounce 0.6s ease-in-out',
+				'typing': 'typing 2s steps(40, end)',
+				'pulse-gentle': 'pulse-gentle 2s ease-in-out infinite'
 			}
 		}
 	},

@@ -8,50 +8,58 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* DoWhistle Brand Colors */
+    --background: 0 0% 91.2%; /* #E9E9E9 Light Gray */
+    --foreground: 0 0% 12.9%; /* #212121 Near Black */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%; /* #FFFFFF White */
+    --card-foreground: 0 0% 12.9%; /* #212121 Near Black */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%; /* #FFFFFF White */
+    --popover-foreground: 0 0% 12.9%; /* #212121 Near Black */
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 0 0% 8.6%; /* #161616 Dark Gray */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF White */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 0 0% 56.5%; /* #909090 Medium Gray */
+    --secondary-foreground: 0 0% 100%; /* #FFFFFF White */
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 0 0% 91.2%; /* #E9E9E9 Light Gray */
+    --muted-foreground: 0 0% 56.5%; /* #909090 Medium Gray */
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 0 0% 56.5%; /* #909090 Medium Gray */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF White */
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 0 0% 56.5%; /* #909090 Medium Gray */
+    --input: 0 0% 100%; /* #FFFFFF White */
+    --ring: 0 0% 8.6%; /* #161616 Dark Gray */
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Chat specific colors */
+    --chat-bubble-user: 0 0% 12.9%; /* #212121 Near Black */
+    --chat-bubble-user-foreground: 0 0% 100%; /* #FFFFFF White */
+    --chat-bubble-bot: 0 0% 100%; /* #FFFFFF White */
+    --chat-bubble-bot-foreground: 0 0% 8.6%; /* #161616 Dark Gray */
+    --chat-background: 0 0% 91.2%; /* #E9E9E9 Light Gray */
+    --chat-header: 0 0% 8.6%; /* #161616 Dark Gray */
+    --chat-header-foreground: 0 0% 100%; /* #FFFFFF White */
+
+    /* Animation variables */
+    --chat-slide-in: slide-in-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    --chat-fade-in: fade-in 0.2s ease-out;
+    --chat-bounce: bounce 0.6s ease-in-out;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
