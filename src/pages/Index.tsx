@@ -1,11 +1,21 @@
 import { ChatBot } from '@/components/ChatBot';
 import Hero from '@/components/Hero';
+import { LocationStatusBar } from '@/components/LocationStatusBar';
+import { useLocationOnMount } from '@/hooks/useLocationOnMount';
 
 const Index = () => {
+  // Auto-get location on mount
+  useLocationOnMount();
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <Hero />
+
+      {/* Location Status Bar */}
+      <div className="fixed top-4 right-4 z-50">
+        <LocationStatusBar />
+      </div>
 
       {/* AI Assistant Ready Indicator */}
       <div className="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-40">
