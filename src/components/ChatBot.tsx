@@ -164,12 +164,12 @@ export const ChatBot: React.FC<ChatBotProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className={`mb-4 bg-card border border-border rounded-lg shadow-xl overflow-hidden ${
+            className={`mb-4 bg-card border-2 border-secondary/20 rounded-xl shadow-2xl overflow-hidden ${
               isMinimized ? 'w-80 h-16' : 'w-96 h-[600px]'
             } transition-all duration-300 flex flex-col`}
           >
-            {/* Header */}
-            <div className="bg-chat-header text-chat-header-foreground p-4 flex items-center justify-between flex-shrink-0">
+                         {/* Header */}
+             <div className="bg-chat-header text-chat-header-foreground p-4 flex items-center justify-between flex-shrink-0 border-b border-secondary/20">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-primary-foreground rounded-full flex items-center justify-center">
                   <MessageCircle className="w-4 h-4 text-primary" />
@@ -210,8 +210,8 @@ export const ChatBot: React.FC<ChatBotProps> = ({
 
             {!isMinimized && (
               <>
-                {/* Messages - This will take up remaining space */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-chat-background min-h-0">
+                                 {/* Messages - This will take up remaining space */}
+                 <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-chat-background min-h-0 chat-scrollbar">
                   {messages.map((message) => (
                     <motion.div
                       key={message.id}
@@ -269,8 +269,8 @@ export const ChatBot: React.FC<ChatBotProps> = ({
                   <div ref={messagesEndRef} />
                 </div>
 
-                {/* Input Footer - Fixed at bottom */}
-                <div className="border-t border-border p-4 bg-card flex-shrink-0">
+                                 {/* Input Footer - Fixed at bottom */}
+                 <div className="border-t border-secondary/20 p-4 bg-card flex-shrink-0">
                   <div className="flex space-x-2">
                     <Input
                       ref={inputRef}
@@ -297,13 +297,13 @@ export const ChatBot: React.FC<ChatBotProps> = ({
       </AnimatePresence>
 
       {/* Floating Button */}
-      <motion.button
-        onClick={toggleChat}
-        className="bg-primary text-primary-foreground w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:bg-primary/90 transition-colors"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        animate={isOpen ? { rotate: 0 } : { rotate: 0 }}
-      >
+             <motion.button
+         onClick={toggleChat}
+         className="bg-primary text-primary-foreground w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:bg-primary/90 transition-all duration-200 border-2 border-secondary/20"
+         whileHover={{ scale: 1.05 }}
+         whileTap={{ scale: 0.95 }}
+         animate={isOpen ? { rotate: 0 } : { rotate: 0 }}
+       >
         {isOpen ? (
           <X className="w-6 h-6" />
         ) : (

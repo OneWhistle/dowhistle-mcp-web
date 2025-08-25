@@ -63,6 +63,86 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
+  /* Custom Scrollbar Styles - DoWhistle Brand Colors */
+  /* Webkit browsers (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(0 0% 91.2%); /* #E9E9E9 Light Gray */
+    border-radius: 4px;
+    border: 1px solid hsl(0 0% 56.5%); /* #909090 Medium Gray */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(0 0% 56.5%); /* #909090 Medium Gray */
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    border: 1px solid hsl(0 0% 91.2%); /* #E9E9E9 Light Gray */
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(0 0% 8.6%); /* #161616 Dark Gray */
+    transform: scale(1.1);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: hsl(0 0% 91.2%); /* #E9E9E9 Light Gray */
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(0 0% 56.5%) hsl(0 0% 91.2%); /* thumb track */
+  }
+
+  /* Chat-specific scrollbar */
+  .chat-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .chat-scrollbar::-webkit-scrollbar-track {
+    background: hsl(0 0% 100%); /* #FFFFFF White */
+    border-radius: 3px;
+    border: 1px solid hsl(0 0% 56.5%); /* #909090 Medium Gray */
+  }
+
+  .chat-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(0 0% 56.5%); /* #909090 Medium Gray */
+    border-radius: 3px;
+    transition: all 0.2s ease;
+    border: 1px solid hsl(0 0% 100%); /* #FFFFFF White */
+  }
+
+  .chat-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(0 0% 8.6%); /* #161616 Dark Gray */
+    transform: scale(1.2);
+  }
+
+  .chat-scrollbar::-webkit-scrollbar-corner {
+    background: hsl(0 0% 100%); /* #FFFFFF White */
+  }
+
+  /* Chat scrollbar for Firefox */
+  .chat-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(0 0% 56.5%) hsl(0 0% 100%); /* thumb track */
+  }
+
+  /* Main page scrollbar */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(0 0% 56.5%) hsl(0 0% 91.2%); /* thumb track */
+  }
+
+  /* Smooth scrolling for better UX */
+  html {
+    scroll-behavior: smooth;
+  }
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
