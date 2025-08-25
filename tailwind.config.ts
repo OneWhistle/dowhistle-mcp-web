@@ -76,6 +76,11 @@ export default {
 				'chat-header': 'hsl(var(--chat-header))',
 				'chat-header-foreground': 'hsl(var(--chat-header-foreground))'
 			},
+			backgroundImage: {
+				'brand-gradient': 'var(--brand-gradient)',
+				'brand-gradient-hover': 'var(--brand-gradient-hover)',
+				'brand-gradient-light': 'var(--brand-gradient-light)',
+			},
 			keyframes: {
 				'accordion-down': {
 					from: {
@@ -120,6 +125,26 @@ export default {
 				'pulse-gentle': {
 					'0%, 100%': { opacity: '1' },
 					'50%': { opacity: '0.7' }
+				},
+				'brand-pulse': {
+					'0%, 100%': { 
+						transform: 'scale(1)',
+						opacity: '1'
+					},
+					'50%': { 
+						transform: 'scale(1.05)',
+						opacity: '0.8'
+					}
+				},
+				'slide-up-brand': {
+					'0%': { 
+						opacity: '0',
+						transform: 'translateY(30px)'
+					},
+					'100%': { 
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
 				}
 			},
 			animation: {
@@ -129,7 +154,9 @@ export default {
 				'fade-in': 'fade-in 0.2s ease-out',
 				'bounce': 'bounce 0.6s ease-in-out',
 				'typing': 'typing 2s steps(40, end)',
-				'pulse-gentle': 'pulse-gentle 2s ease-in-out infinite'
+				'pulse-gentle': 'pulse-gentle 2s ease-in-out infinite',
+				'brand-pulse': 'brand-pulse 2s ease-in-out infinite',
+				'slide-up-brand': 'slide-up-brand 0.6s ease-out forwards'
 			}
 		}
 	},

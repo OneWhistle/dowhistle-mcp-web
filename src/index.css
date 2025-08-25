@@ -8,39 +8,46 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* DoWhistle Brand Colors */
-    --background: 0 0% 91.2%; /* #E9E9E9 Light Gray */
-    --foreground: 0 0% 12.9%; /* #212121 Near Black */
+    /* DoWhistle Brand Colors - Official Website Palette */
+    --background: 0 0% 100%; /* #FFFFFF Pure White */
+    --foreground: 0 0% 8.6%; /* #161616 Dark Gray */
 
     --card: 0 0% 100%; /* #FFFFFF White */
-    --card-foreground: 0 0% 12.9%; /* #212121 Near Black */
+    --card-foreground: 0 0% 8.6%; /* #161616 Dark Gray */
 
     --popover: 0 0% 100%; /* #FFFFFF White */
-    --popover-foreground: 0 0% 12.9%; /* #212121 Near Black */
+    --popover-foreground: 0 0% 8.6%; /* #161616 Dark Gray */
 
+    /* DoWhistle Primary Brand Colors */
     --primary: 0 0% 8.6%; /* #161616 Dark Gray */
     --primary-foreground: 0 0% 100%; /* #FFFFFF White */
-
+    
+    /* DoWhistle Secondary Brand Colors */
     --secondary: 0 0% 56.5%; /* #909090 Medium Gray */
     --secondary-foreground: 0 0% 100%; /* #FFFFFF White */
 
     --muted: 0 0% 91.2%; /* #E9E9E9 Light Gray */
     --muted-foreground: 0 0% 56.5%; /* #909090 Medium Gray */
 
-    --accent: 0 0% 56.5%; /* #909090 Medium Gray */
-    --accent-foreground: 0 0% 100%; /* #FFFFFF White */
+    --accent: 0 0% 91.2%; /* #E9E9E9 Light Gray */
+    --accent-foreground: 0 0% 8.6%; /* #161616 Dark Gray */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 56.5%; /* #909090 Medium Gray */
+    --border: 0 0% 91.2%; /* #E9E9E9 Light Gray */
     --input: 0 0% 100%; /* #FFFFFF White */
     --ring: 0 0% 8.6%; /* #161616 Dark Gray */
 
     --radius: 0.75rem;
 
+    /* DoWhistle Brand Gradients - Updated to use official colors */
+    --brand-gradient: linear-gradient(135deg, hsl(0 0% 8.6%), hsl(0 0% 56.5%));
+    --brand-gradient-hover: linear-gradient(135deg, hsl(0 0% 12.9%), hsl(0 0% 45%));
+    --brand-gradient-light: linear-gradient(135deg, hsl(0 0% 91.2%), hsl(0 0% 100%));
+
     /* Chat specific colors */
-    --chat-bubble-user: 0 0% 12.9%; /* #212121 Near Black */
+    --chat-bubble-user: 0 0% 8.6%; /* #161616 Dark Gray */
     --chat-bubble-user-foreground: 0 0% 100%; /* #FFFFFF White */
     --chat-bubble-bot: 0 0% 100%; /* #FFFFFF White */
     --chat-bubble-bot-foreground: 0 0% 8.6%; /* #161616 Dark Gray */
@@ -54,13 +61,13 @@ All colors MUST be HSL.
     --chat-bounce: bounce 0.6s ease-in-out;
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-foreground: 0 0% 8.6%; /* #161616 Dark Gray */
+    --sidebar-primary: 0 0% 8.6%; /* #161616 Dark Gray */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 91.2%; /* #E9E9E9 Light Gray */
+    --sidebar-accent-foreground: 0 0% 8.6%; /* #161616 Dark Gray */
+    --sidebar-border: 0 0% 91.2%; /* #E9E9E9 Light Gray */
+    --sidebar-ring: 0 0% 8.6%; /* #161616 Dark Gray */
   }
 
   /* Custom Scrollbar Styles - DoWhistle Brand Colors */
@@ -77,14 +84,14 @@ All colors MUST be HSL.
   }
 
   ::-webkit-scrollbar-thumb {
-    background: hsl(0 0% 56.5%); /* #909090 Medium Gray */
+    background: hsl(0 0% 8.6%); /* #161616 Dark Gray */
     border-radius: 4px;
     transition: all 0.2s ease;
     border: 1px solid hsl(0 0% 91.2%); /* #E9E9E9 Light Gray */
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(0 0% 8.6%); /* #161616 Dark Gray */
+    background: hsl(0 0% 12.9%); /* #212121 Near Black */
     transform: scale(1.1);
   }
 
@@ -95,7 +102,7 @@ All colors MUST be HSL.
   /* Firefox */
   * {
     scrollbar-width: thin;
-    scrollbar-color: hsl(0 0% 56.5%) hsl(0 0% 91.2%); /* thumb track */
+    scrollbar-color: hsl(0 0% 8.6%) hsl(0 0% 91.2%); /* thumb track */
   }
 
   /* Chat-specific scrollbar */
@@ -111,14 +118,14 @@ All colors MUST be HSL.
   }
 
   .chat-scrollbar::-webkit-scrollbar-thumb {
-    background: hsl(0 0% 56.5%); /* #909090 Medium Gray */
+    background: hsl(0 0% 8.6%); /* #161616 Dark Gray */
     border-radius: 3px;
     transition: all 0.2s ease;
     border: 1px solid hsl(0 0% 100%); /* #FFFFFF White */
   }
 
   .chat-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: hsl(0 0% 8.6%); /* #161616 Dark Gray */
+    background: hsl(0 0% 12.9%); /* #212121 Near Black */
     transform: scale(1.2);
   }
 
@@ -129,13 +136,13 @@ All colors MUST be HSL.
   /* Chat scrollbar for Firefox */
   .chat-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: hsl(0 0% 56.5%) hsl(0 0% 100%); /* thumb track */
+    scrollbar-color: hsl(0 0% 8.6%) hsl(0 0% 100%); /* thumb track */
   }
 
   /* Main page scrollbar */
   html {
     scrollbar-width: thin;
-    scrollbar-color: hsl(0 0% 56.5%) hsl(0 0% 91.2%); /* thumb track */
+    scrollbar-color: hsl(0 0% 8.6%) hsl(0 0% 91.2%); /* thumb track */
   }
 
   /* Smooth scrolling for better UX */
@@ -341,4 +348,223 @@ All colors MUST be HSL.
   opacity: 0;
   animation: float 4s ease-in-out infinite;
   animation-play-state: paused;
+}
+
+/* DoWhistle Brand Components */
+.brand-gradient {
+  background: var(--brand-gradient);
+}
+
+.brand-gradient-hover:hover {
+  background: var(--brand-gradient-hover);
+}
+
+.brand-gradient-light {
+  background: var(--brand-gradient-light);
+}
+
+.brand-button-primary {
+  background: var(--brand-gradient);
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.brand-button-primary:hover {
+  background: var(--brand-gradient-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(22, 22, 22, 0.3);
+}
+
+.brand-button-secondary {
+  background: white;
+  color: hsl(0 0% 8.6%);
+  border: 2px solid hsl(0 0% 8.6%);
+  transition: all 0.3s ease;
+}
+
+.brand-button-secondary:hover {
+  background: hsl(0 0% 8.6%);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.feature-card {
+  background: white;
+  border: 1px solid hsl(0 0% 91.2%);
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(22, 22, 22, 0.15);
+  border-color: hsl(0 0% 56.5%);
+}
+
+.stepper-step {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.stepper-step.active {
+  color: hsl(0 0% 8.6%);
+}
+
+.stepper-step.completed {
+  color: hsl(0 0% 56.5%);
+}
+
+.stepper-connector {
+  height: 2px;
+  background: linear-gradient(90deg, hsl(0 0% 8.6%), hsl(0 0% 56.5%));
+  transition: all 0.3s ease;
+}
+
+/* Enhanced animations for brand elements */
+@keyframes brand-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.brand-pulse {
+  animation: brand-pulse 2s ease-in-out infinite;
+}
+
+@keyframes slide-up-brand {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up-brand {
+  animation: slide-up-brand 0.6s ease-out forwards;
+}
+
+/* App store button styles */
+.app-store-button {
+  background: var(--brand-gradient);
+  color: white;
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(22, 22, 22, 0.2);
+}
+
+.app-store-button:hover {
+  background: var(--brand-gradient-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(22, 22, 22, 0.3);
+}
+
+/* Social icon styles */
+.social-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--brand-gradient);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+  background: var(--brand-gradient-hover);
+  transform: scale(1.1);
+}
+
+/* Enhanced responsive animations for brand elements */
+@media (max-width: 768px) {
+  .feature-card {
+    margin: 0 1rem;
+  }
+  
+  .stepper-step {
+    margin-bottom: 2rem;
+  }
+  
+  .app-store-button {
+    min-width: 100%;
+  }
+}
+
+/* Staggered animation delays for feature cards */
+.feature-card:nth-child(1) { animation-delay: 0s; }
+.feature-card:nth-child(2) { animation-delay: 0.1s; }
+.feature-card:nth-child(3) { animation-delay: 0.2s; }
+.feature-card:nth-child(4) { animation-delay: 0.3s; }
+
+/* Enhanced hover effects for interactive elements */
+.brand-button-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.2);
+}
+
+.brand-button-secondary:active {
+  transform: translateY(0);
+}
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom focus styles for accessibility */
+.brand-button-primary:focus,
+.brand-button-secondary:focus,
+.app-store-button:focus {
+  outline: 2px solid hsl(0 0% 8.6%);
+  outline-offset: 2px;
+}
+
+/* Loading states for buttons */
+.brand-button-primary.loading,
+.app-store-button.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Enhanced mobile navigation */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .hero-headline {
+    font-size: 2.5rem;
+    line-height: 1.2;
+  }
+  
+  .hero-subheadline {
+    font-size: 1.125rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .brand-button-primary,
+  .brand-button-secondary,
+  .app-store-button,
+  .social-icon {
+    display: none;
+  }
+  
+  .feature-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
 }

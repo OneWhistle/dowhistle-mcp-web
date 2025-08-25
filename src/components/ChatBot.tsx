@@ -15,12 +15,16 @@ interface Message {
 
 interface ChatBotProps {
   mcpServerUrl?: string;
+  isOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
 export const ChatBot: React.FC<ChatBotProps> = ({ 
-  mcpServerUrl = 'https://dowhistle-beta-mcp-server.onrender.com/mcp/' 
+  mcpServerUrl = 'https://dowhistle-beta-mcp-server.onrender.com/mcp/',
+  isOpen: externalIsOpen,
+  onOpenChange
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setIsInternalOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -36,6 +40,10 @@ export const ChatBot: React.FC<ChatBotProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  // Use external state if provided, otherwise use internal state
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+  const setIsOpen = onOpenChange || setIsInternalOpen;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
