@@ -1,33 +1,105 @@
 import React from 'react';
-import { Car, Bell, Zap, Shield } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Car, Bell, Zap, Shield, MapPin, Clock, Users, Star } from 'lucide-react';
+
+interface BentoGridItemProps {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  className?: string;
+  size?: 'small' | 'medium' | 'large';
+}
+
+const BentoGridItem = ({
+  title,
+  description,
+  icon,
+  className,
+  size = 'small',
+}: BentoGridItemProps) => {
+  const variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: 'spring' as const, damping: 25 },
+    },
+  };
+
+  return (
+    <motion.div
+      variants={variants}
+      className={`group border-gray-200 bg-white/80 backdrop-blur-sm hover:border-gray-300 relative flex h-full cursor-pointer flex-col justify-between overflow-hidden rounded-xl border px-4 sm:px-6 pt-4 sm:pt-6 pb-8 sm:pb-10 shadow-lg transition-all duration-500 hover:shadow-xl ${className}`}
+    >
+      <div className="absolute top-0 -right-1/2 z-0 size-full cursor-pointer bg-[linear-gradient(to_right,rgba(22,22,22,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(22,22,22,0.05)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] bg-[size:24px_24px]"></div>
+
+      <div className="text-gray-200 group-hover:text-gray-300 absolute right-1 bottom-3 scale-[4] sm:scale-[6] transition-all duration-700 group-hover:scale-[4.2] sm:group-hover:scale-[6.2]">
+        {icon}
+      </div>
+
+      <div className="relative z-10 flex h-full flex-col justify-between">
+        <div>
+          <div className="bg-gray-100 text-gray-700 shadow-gray-200 group-hover:bg-gray-200 group-hover:shadow-gray-300 mb-3 sm:mb-4 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full shadow transition-all duration-500">
+            {icon}
+          </div>
+          <h3 className="mb-2 text-lg sm:text-xl font-semibold tracking-tight text-gray-900">{title}</h3>
+          <p className="text-gray-600 text-xs sm:text-sm">{description}</p>
+        </div>
+      </div>
+      <div className="from-gray-200 to-gray-100 absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r blur-2xl transition-all duration-500 group-hover:blur-lg" />
+    </motion.div>
+  );
+};
 
 export default function ConsumerFeatures() {
-  const features = [
+  const items = [
     {
-      icon: Bell,
-      title: "Smart Alerts",
-      description: "Get notified when matching providers are nearby",
-      color: "from-gray-500 to-gray-600"
+      title: 'Smart Alerts & Notifications',
+      description: 'Get instant notifications when matching providers are nearby with intelligent proximity detection.',
+      icon: <Bell className="size-6" />,
+      size: 'large' as const,
     },
     {
-      icon: Car,
-      title: "No Surge Pricing",
-      description: "Regulated fares with transparent pricing",
-      color: "from-gray-600 to-gray-700"
+      title: 'No Surge Pricing',
+      description: 'Enjoy regulated fares with transparent pricing and no hidden costs.',
+      icon: <Car className="size-6" />,
+      size: 'medium' as const,
     },
     {
-      icon: Zap,
-      title: "Quick Access",
-      description: "Find local deals and services instantly",
-      color: "from-gray-700 to-gray-800"
+      title: 'Quick Access',
+      description: 'Find local deals and services instantly with one-tap access.',
+      icon: <Zap className="size-6" />,
+      size: 'small' as const,
     },
     {
-      icon: Shield,
-      title: "Safe & Secure",
-      description: "Verified providers with built-in safety features",
-      color: "from-gray-800 to-gray-900"
-    }
+      title: 'Safe & Secure',
+      description: 'Verified providers with built-in safety features and real-time tracking.',
+      icon: <Shield className="size-6" />,
+      size: 'medium' as const,
+    },
+    {
+      title: 'Location-Based Services',
+      description: 'Discover services tailored to your exact location and preferences.',
+      icon: <MapPin className="size-6" />,
+      size: 'small' as const,
+    },
+    {
+      title: '24/7 Availability',
+      description: 'Access services anytime, anywhere with our round-the-clock platform.',
+      icon: <Clock className="size-6" />,
+      size: 'small' as const,
+    },
   ];
+
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.12,
+        delayChildren: 0.1,
+      },
+    },
+  };
 
   return (
     <section className="py-20 bg-white">
@@ -38,30 +110,36 @@ export default function ConsumerFeatures() {
             For Consumer Whistlers
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Stop searchingjust Whistle to get alerts when matching providers are nearby. 
+            Stop searching just Whistle to get alerts when matching providers are nearby. 
             No surge. No hassle. Just what you need.
           </p>
         </div>
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {features.map((feature, index) => (
-            <div 
-              key={index}
-              className="feature-card p-8 text-center group hover:shadow-xl transition-all duration-300"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className={`w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                <feature.icon className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                {feature.description}
-              </p>
-            </div>
-          ))}
+        {/* Bento Grid */}
+        <div className="w-full max-w-6xl mx-auto mb-16">
+          <motion.div
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {items.map((item, i) => (
+              <BentoGridItem
+                key={i}
+                title={item.title}
+                description={item.description}
+                icon={item.icon}
+                size={item.size}
+                className={
+                  item.size === 'large'
+                    ? 'lg:col-span-2 xl:col-span-4'
+                    : item.size === 'medium'
+                      ? 'lg:col-span-2 xl:col-span-3'
+                      : 'lg:col-span-1 xl:col-span-2'
+                }
+              />
+            ))}
+          </motion.div>
         </div>
 
         {/* Bottom CTA */}

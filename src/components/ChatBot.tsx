@@ -173,7 +173,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
             className={`mb-4 bg-card border-2 border-secondary/20 rounded-xl shadow-2xl overflow-hidden ${
-              isMinimized ? 'w-80 h-16' : 'w-96 h-[600px]'
+              isMinimized ? 'w-80 h-16' : 'w-80 md:w-96 h-[600px]'
             } transition-all duration-300 flex flex-col`}
           >
                          {/* Header */}
