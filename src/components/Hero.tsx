@@ -127,7 +127,13 @@ export default function Hero({ onStartWhistling }: HeroProps) {
             <span className="word" data-delay="950">all</span>
             <span className="word" data-delay="1100">your</span>
             <span className="word" data-delay="1250">needs</span>
-            <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 bg-clip-text text-transparent drop-shadow-sm animate-accent">just one Whistle away</span>
+            <span
+              className="inline-block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 bg-clip-text text-transparent drop-shadow-sm animate-accent pb-[6px] leading-[1.1]             
+  "
+            >
+              just one Whistle away
+            </span>
+
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             <span className="word" data-delay="2200">Whether</span>
