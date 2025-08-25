@@ -3,22 +3,58 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DoWhistle - Search on the Move | AI-Powered Transportation Platform</title>
+    <title>DoWhistle - Search on the Move | AI-Powered Assistant</title>
     <meta name="description" content="Connect with transportation services and providers seamlessly with DoWhistle's AI assistant. Book rides, find services, and navigate our platform with ease." />
     <meta name="author" content="DoWhistle" />
     <meta name="keywords" content="transportation, ride booking, AI assistant, MCP integration, DoWhistle, search on the move" />
 
-    <meta property="og:title" content="DoWhistle - Search on the Move | AI-Powered Transportation Platform" />
+    <meta property="og:title" content="DoWhistle - Search on the Move | AI-Powered Assistant" />  
     <meta property="og:description" content="Connect with transportation services and providers seamlessly with DoWhistle's AI assistant. Book rides, find services, and navigate our platform with ease." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:image" content="" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:site" content="" />
+    <meta name="twitter:image" content="" />
   </head>
 
   <body>
+    <style>
+      /* Preboot Loader Styles - minimal and inline to render instantly */
+      #preboot-loader { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 9999; overflow: hidden; backdrop-filter: saturate(180%) blur(6px); background:
+        radial-gradient(1200px 800px at 30% 20%, rgba(37,99,235,0.06), transparent 60%),
+        radial-gradient(1000px 700px at 70% 80%, rgba(124,58,237,0.06), transparent 60%),
+        linear-gradient(to bottom right, rgba(255,255,255,0.96), rgba(248,250,252,0.92)); }
+      #preboot-loader::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .6; background:
+        repeating-linear-gradient(to right, rgba(17,24,39,0.04) 0, rgba(17,24,39,0.04) 1px, transparent 1px, transparent 24px),
+        repeating-linear-gradient(to bottom, rgba(17,24,39,0.04) 0, rgba(17,24,39,0.04) 1px, transparent 1px, transparent 24px); }
+      #preboot-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+      #preboot-bars { display: flex; align-items: flex-end; justify-content: center; gap: 4px; height: 40px; }
+      .preboot-bar { width: 8px; height: 32px; border-radius: 8px; background: linear-gradient(to bottom, #2563eb, #7c3aed, #4338ca); transform-origin: center bottom; animation: preboot-wave 1s ease-in-out infinite; opacity: 0.9; }
+      .preboot-bar:nth-child(1){ animation-delay: 0s; }
+      .preboot-bar:nth-child(2){ animation-delay: .08s; }
+      .preboot-bar:nth-child(3){ animation-delay: .16s; }
+      .preboot-bar:nth-child(4){ animation-delay: .24s; }
+      .preboot-bar:nth-child(5){ animation-delay: .32s; }
+      .preboot-bar:nth-child(6){ animation-delay: .40s; }
+      .preboot-bar:nth-child(7){ animation-delay: .48s; }
+      @keyframes preboot-wave { 0%{ transform: translateY(0) scaleY(.6) scaleX(1); } 50%{ transform: translateY(-20%) scaleY(1.6) scaleX(.85); } 100%{ transform: translateY(0) scaleY(.6) scaleX(1); } }
+      #preboot-label { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; font-size: 12px; color: #374151; opacity: 0.9; }
+    </style>
+    <div id="preboot-loader" aria-label="Loading">
+      <div id="preboot-wrap">
+        <div id="preboot-bars">
+          <div class="preboot-bar"></div>
+          <div class="preboot-bar"></div>
+          <div class="preboot-bar"></div>
+          <div class="preboot-bar"></div>
+          <div class="preboot-bar"></div>
+          <div class="preboot-bar"></div>
+          <div class="preboot-bar"></div>
+        </div>
+        <div id="preboot-label">Loading DoWhistle Assistant…</div>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
