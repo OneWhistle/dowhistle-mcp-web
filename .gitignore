@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 
 01-note/
+.env
