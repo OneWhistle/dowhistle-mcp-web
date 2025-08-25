@@ -68,7 +68,7 @@ const Index = () => {
 
       {/* ChatBot Component */}
       <ChatBot 
-        mcpServerUrl="https://dowhistle-beta-mcp-server.onrender.com/mcp/"
+        mcpServerUrl={(import.meta as any)?.env?.VITE_MCP_SERVER_URL || "http://localhost:8000/mcp/"}
         isOpen={isChatOpen}
         onOpenChange={setIsChatOpen}
       />

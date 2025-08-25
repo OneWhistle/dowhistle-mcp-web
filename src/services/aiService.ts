@@ -1,5 +1,4 @@
 import OpenAI from 'openai';
-import { getMCPClient, MCPResponse } from './mcpClient';
 
 interface AIServiceConfig {
   apiKey?: string;
@@ -26,7 +25,6 @@ interface AIResponse {
 
 class AIService {
   private openai: OpenAI | null = null;
-  private mcpClient = getMCPClient();
   private config: AIServiceConfig;
 
   constructor(config: AIServiceConfig = {}) {
@@ -36,7 +34,6 @@ class AIService {
       ...config
     };
 
-    // Initialize OpenAI if API key is provided
     if (config.apiKey) {
       this.openai = new OpenAI({
         apiKey: config.apiKey,
@@ -47,79 +44,67 @@ class AIService {
 
   private getDoWhistleKnowledge(): string {
     return `
-    You are the DoWhistle Assistant, an AI helper for the DoWhistle transportation platform.
-    
-    About DoWhistle:
-    - "Search on the move" transportation platform
-    - Connects transportation consumers with service providers
-    - Website: https://www.dowhistle.com/
-    - Facilitates ride booking, service discovery, and provider connections
-    
-    Your capabilities:
-    1. Help users find transportation services
-    2. Assist with booking rides and services
-    3. Connect consumers with providers
-    4. Provide platform guidance and support
-    5. Answer questions about DoWhistle services
-    6. Offer location-based service recommendations
-    
-    Always be helpful, professional, and focused on transportation solutions.
-    When users ask about booking or services, offer to connect them with available providers.
-    `;
+You are the DoWhistle Assistant — a focused helper for the DoWhistle hyperlocal platform. Only answer questions related to DoWhistle’s brand, app, and services.
+
+About DoWhistle (brand & positioning)
+- Taglines: “Search on the move.” “Bridging the ‘Need’ and ‘Have’.” “Answering all your needs; just one ‘Whistle’ away.”
+- What it is: A location-based, two-sided platform that connects nearby “Whistlers” (providers and consumers) and alerts them when a match is close by. Users can search, post a Whistle (need or offer), and connect directly.
+
+Core concepts
+- Provider Whistlers:
+  • Taxi & ride-share providers (affordable subscription, local-government guided fares, no surge, in-app meter, know drop points before accepting).
+  • Service providers (plumbers, handymen, etc.).
+  • Retail businesses (post nearby offers/deals).
+  • Custom Whistlers (unique skills or “have” items).
+- Consumer Whistlers:
+  • Discover nearby providers for rides, services, and retail offers without heavy searching.
+  • Create Consumer Whistles to get alerts when matching providers are nearing.
+- Platform scope:
+  • DoWhistle facilitates discovery, matching, and communication. Payments are not processed by DoWhistle; users handle transactions directly.
+  • Available on iOS and Android (download links on the DoWhistle site).
+
+What you can help with
+1) Explain how DoWhistle works (provider vs. consumer, tags, alerts, matching).
+2) Guide users to create effective Whistles:
+   - Choose Provider or Consumer.
+   - Add tags (e.g., Ride Share, Plumber, Offer Share).
+   - Add details/description.
+   - Set alert radius.
+   - Set expiry (1–24 hours or always on).
+3) Help users discover categories (rides, local services, retail offers) and how to connect with Whistlers (call/SMS from profiles).
+4) Offer app guidance: anonymous browsing vs. registered features, adjusting search radius, OTP/troubleshooting basics, ratings (thumbs up/down).
+5) Clarify guardrails: DoWhistle doesn’t take payments or charge commissions; no guarantees on transactions. Encourage safe, direct communication.
+
+Tone & boundaries
+- Be concise, helpful, and brand-true.
+- Do NOT answer general or off-topic questions.
+- When asked to “book” or “hire,” guide the user to post/search in the app and connect with nearby Whistlers.
+- Keep recommendations strictly within DoWhistle’s services and features.
+`;
   }
 
-  async processMessage(
-    message: string, 
-    context: ChatContext = {}
-  ): Promise<AIResponse> {
+  async processMessage(message: string, context: ChatContext = {}): Promise<AIResponse> {
     try {
-      // First, try to get enhanced response using MCP server
-      const mcpResponse = await this.tryMCPEnhancement(message, context);
-      
       if (this.openai) {
-        return await this.getOpenAIResponse(message, context, mcpResponse);
+        return await this.getOpenAIResponse(message, context);
       } else {
-        return await this.getFallbackResponse(message, context, mcpResponse);
+        return await this.getFallbackResponse(message, context);
       }
     } catch (error) {
       console.error('Error processing message:', error);
       return {
-        text: "I apologize, but I'm experiencing some technical difficulties. Please try again, or let me know how else I can help you with DoWhistle services."
+        text:
+          "I’m having trouble responding right now. Please try again, or tell me how I can help with DoWhistle services."
       };
     }
   }
 
-  private async tryMCPEnhancement(
-    message: string, 
-    context: ChatContext
-  ): Promise<MCPResponse | null> {
-    try {
-      const mcpClient = getMCPClient();
-      const response = await mcpClient.sendMessage({
-        id: Date.now().toString(),
-        content: message,
-        context: context
-      });
-      
-      return response.success ? response : null;
-    } catch (error) {
-      console.warn('MCP enhancement failed:', error);
-      return null;
-    }
-  }
-
-  private async getOpenAIResponse(
-    message: string, 
-    context: ChatContext,
-    mcpData: MCPResponse | null
-  ): Promise<AIResponse> {
+  private async getOpenAIResponse(message: string, context: ChatContext): Promise<AIResponse> {
     const systemPrompt = `${this.getDoWhistleKnowledge()}
-    
-    Current context: ${JSON.stringify(context)}
-    ${mcpData ? `MCP Server Data: ${JSON.stringify(mcpData.data)}` : ''}
-    
-    Respond naturally and helpfully. If you can take actions like booking or searching, 
-    include appropriate action objects in your response.`;
+
+Current context: ${JSON.stringify(context)}
+
+Respond naturally and helpfully. If you suggest actions (like searching, posting a Whistle, or connecting to a provider), include simple action objects in your response.`;
 
     const completion = await this.openai!.chat.completions.create({
       model: this.config.model!,
@@ -131,123 +116,91 @@ class AIService {
       max_tokens: 300
     });
 
-    const responseText = completion.choices[0]?.message?.content || 
-      "I'm here to help with your DoWhistle transportation needs!";
+    const responseText =
+      completion.choices[0]?.message?.content ||
+      "I’m here to help with DoWhistle — rides, local services, and nearby offers. What do you need?";
 
     return this.parseAIResponse(responseText, message, context);
   }
 
-  private async getFallbackResponse(
-    message: string, 
-    context: ChatContext,
-    mcpData: MCPResponse | null
-  ): Promise<AIResponse> {
-    const lowerMessage = message.toLowerCase();
-    
-    // Enhanced responses with MCP data if available
-    if (mcpData?.data) {
+  private async getFallbackResponse(message: string, context: ChatContext): Promise<AIResponse> {
+    const lower = message.toLowerCase();
+
+    if (lower.includes('book') || lower.includes('ride')) {
       return {
-        text: `Based on real-time data: ${this.formatMCPResponse(mcpData.data)}`,
-        actions: [{ type: 'mcp_data_received', data: mcpData.data }]
+        text:
+          "I can help you find nearby ride providers on DoWhistle. Share your pickup area and I’ll connect you with available Whistlers.",
+        suggestions: ['Find nearby providers', 'Set pickup', 'View provider details'],
+        actions: [{ type: 'search_services', data: { category: 'Ride Share', location: context.userLocation } }]
       };
     }
-    
-    // DoWhistle-specific pattern matching
-    if (lowerMessage.includes('book') || lowerMessage.includes('ride')) {
+
+    if (lower.includes('service') || lower.includes('provider') || lower.includes('offer')) {
       return {
-        text: "I can help you book a ride through our 'Search on the move' platform. Let me connect you with available transportation providers in your area.",
-        suggestions: ['Find nearby services', 'Check ride prices', 'See provider reviews'],
-        actions: [{ type: 'search_services', data: { location: context.userLocation } }]
-      };
-    }
-    
-    if (lowerMessage.includes('service') || lowerMessage.includes('provider')) {
-      return {
-        text: "DoWhistle connects you with trusted transportation providers. Are you looking to book a service or register as a provider?",
-        suggestions: ['Book a service', 'Become a provider', 'View services'],
+        text:
+          "DoWhistle connects you with nearby rides, local services, and retail offers. Are you looking to book a service, find a deal, or register as a provider?",
+        suggestions: ['Book a service', 'Find offers', 'Become a provider'],
         needsUserInput: true
       };
     }
-    
-    if (lowerMessage.includes('location') || lowerMessage.includes('area')) {
+
+    if (lower.includes('location') || lower.includes('area')) {
       return {
-        text: "I can help you find transportation services in your area. Please share your location, and I'll show you available providers and services.",
+        text:
+          "Tell me your location or allow location access, and I’ll show nearby Whistlers that match your need.",
         actions: [{ type: 'request_location', data: {} }],
         needsUserInput: true
       };
     }
-    
-    if (lowerMessage.includes('price') || lowerMessage.includes('cost')) {
+
+    if (lower.includes('price') || lower.includes('cost') || lower.includes('fare')) {
       return {
-        text: "Transportation pricing varies by provider, distance, and service type. I can help you compare prices from multiple providers for the best rates.",
-        suggestions: ['Get price quotes', 'Compare providers', 'See pricing factors'],
-        actions: [{ type: 'price_comparison', data: {} }]
-      };
-    }
-    
-    if (lowerMessage.includes('help') || lowerMessage.includes('how')) {
-      return {
-        text: "I'm here to help with all your DoWhistle needs! Our platform makes transportation simple by connecting you with local providers. I can assist with bookings, finding services, or answering questions.",
-        suggestions: ['Book a ride', 'Find providers', 'Learn about DoWhistle', 'Get support']
+        text:
+          "Pricing depends on provider, distance, and service type. I can help you compare nearby options before you connect.",
+        suggestions: ['Get quotes', 'Compare providers'],
+        actions: [{ type: 'price_comparison', data: { location: context.userLocation } }]
       };
     }
 
-    // Default response
+    if (lower.includes('help') || lower.includes('how')) {
+      return {
+        text:
+          "I’m your DoWhistle Assistant. I can guide you to post a Whistle, find nearby providers, or connect with rides and services.",
+        suggestions: ['Post a Whistle', 'Find providers', 'Learn how DoWhistle works']
+      };
+    }
+
     return {
-      text: "Thank you for reaching out! I'm your DoWhistle Assistant, ready to help with transportation services, bookings, and platform guidance. What can I help you with today?",
-      suggestions: ['Book transportation', 'Find services', 'Get help']
+      text:
+        "Hi! I’m the DoWhistle Assistant. I can help you find rides, local services, or nearby offers. What do you need right now?",
+      suggestions: ['Book a ride', 'Find services', 'See offers']
     };
   }
 
-  private formatMCPResponse(data: any): string {
-    if (typeof data === 'string') return data;
-    if (data.message) return data.message;
-    if (data.services) return `Found ${data.services.length} available services in your area.`;
-    return 'I have the latest information to help you.';
-  }
-
-  private parseAIResponse(responseText: string, originalMessage: string, context: ChatContext): AIResponse {
-    // Extract potential actions and suggestions from AI response
+  private parseAIResponse(responseText: string, originalMessage: string, _context: ChatContext): AIResponse {
     const actions: Array<{ type: string; data: any }> = [];
     const suggestions: string[] = [];
-    
-    // Look for booking intent
+
     if (responseText.toLowerCase().includes('book') || originalMessage.toLowerCase().includes('book')) {
       actions.push({ type: 'booking_intent', data: { message: originalMessage } });
     }
-    
-    // Look for location intent
     if (responseText.toLowerCase().includes('location') || originalMessage.toLowerCase().includes('location')) {
       actions.push({ type: 'location_request', data: {} });
     }
-    
-    // Generate contextual suggestions
+
     if (originalMessage.toLowerCase().includes('price')) {
-      suggestions.push('Get price quotes', 'Compare providers');
+      suggestions.push('Get quotes', 'Compare providers');
     } else if (originalMessage.toLowerCase().includes('book')) {
       suggestions.push('Choose service type', 'Set pickup location');
     } else {
-      suggestions.push('Book a ride', 'Find services', 'Get help');
+      suggestions.push('Book a ride', 'Find services', 'See offers');
     }
 
     return {
       text: responseText,
-      suggestions: suggestions.length > 0 ? suggestions : undefined,
-      actions: actions.length > 0 ? actions : undefined
+      suggestions: suggestions.length ? suggestions : undefined,
+      actions: actions.length ? actions : undefined
     };
-  }
-
-  async initializeMCPConnection(): Promise<boolean> {
-    try {
-      return await this.mcpClient.connect();
-    } catch (error) {
-      console.error('Failed to initialize MCP connection:', error);
-      return false;
-    }
-  }
-
-  getMCPConnectionStatus() {
-    return this.mcpClient.getConnectionStatus();
   }
 }
 

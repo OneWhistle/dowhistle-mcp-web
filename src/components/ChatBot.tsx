@@ -4,6 +4,8 @@ import { MessageCircle, X, Send, Minimize2, Wifi, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { getAIService } from '@/services/aiService';
+import { getMCPClient } from '@/services/mcpClient';
 
 interface Message {
   id: string;
@@ -20,20 +22,24 @@ interface ChatBotProps {
 }
 
 export const ChatBot: React.FC<ChatBotProps> = ({ 
-  mcpServerUrl = 'https://dowhistle-beta-mcp-server.onrender.com/mcp/',
+  mcpServerUrl = (import.meta as any)?.env?.VITE_MCP_SERVER_URL || 'http://localhost:8000/mcp/',
   isOpen: externalIsOpen,
   onOpenChange
 }) => {
+  const aiService = getAIService({ apiKey: import.meta.env.VITE_OPENAI_API_KEY });
   const [internalIsOpen, setIsInternalOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hi! I\'m your DoWhistle Assistant. I can help you find transportation services, book rides, and navigate our platform. How can I assist you today?',
+      text:
+        "Hi! I'm your DoWhistle Assistant. Tell me what you need rides, services, or deals and I'll find nearby options and let you know when one's close. You're just one whistle away. How can I help?",
       sender: 'bot',
-      timestamp: new Date()
-    }
+      timestamp: new Date(),
+    },
   ]);
+  
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isConnected, setIsConnected] = useState(true);
@@ -61,53 +67,35 @@ export const ChatBot: React.FC<ChatBotProps> = ({
 
   // Simulate MCP connection status
   useEffect(() => {
-    const checkConnection = () => {
-      // Simulate connection check
-      const connected = Math.random() > 0.1; // 90% success rate
-      setIsConnected(connected);
-      
-      if (!connected) {
+    const mcp = getMCPClient({ serverUrl: mcpServerUrl });
+    let cancelled = false;
+    (async () => {
+      const ok = await mcp.connect();
+      if (cancelled) return;
+      setIsConnected(ok);
+      if (ok) {
+        const tools = await mcp.listTools();
+        if (tools.success) {
+          // eslint-disable-next-line no-console
+          console.log('MCP tools:', tools.data);
+        } else {
+          // eslint-disable-next-line no-console
+          console.warn('Failed to list MCP tools:', tools.error);
+        }
+      } else {
         toast({
           title: "Connection Issue",
-          description: "Reconnecting to DoWhistle services...",
+          description: "Unable to connect to DoWhistle MCP server.",
           variant: "destructive"
         });
       }
-    };
+    })();
+    return () => { cancelled = true; };
+  }, [mcpServerUrl, toast]);
 
-    const interval = setInterval(checkConnection, 30000); // Check every 30 seconds
-    return () => clearInterval(interval);
-  }, [toast]);
-
-  const simulateAIResponse = async (userMessage: string): Promise<string> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
-
-    const lowerMessage = userMessage.toLowerCase();
-    
-    // DoWhistle-specific responses
-    if (lowerMessage.includes('book') || lowerMessage.includes('ride')) {
-      return "I can help you book a ride! Our 'Search on the move' platform connects you with local transportation providers. Would you like me to check available services in your area?";
-    }
-    
-    if (lowerMessage.includes('service') || lowerMessage.includes('provider')) {
-      return "DoWhistle connects transportation consumers with service providers seamlessly. Are you looking to find a service or register as a provider?";
-    }
-    
-    if (lowerMessage.includes('location') || lowerMessage.includes('area')) {
-      return "I can help you find transportation services in your area. Please share your location or the area where you need transportation, and I'll connect you with available providers.";
-    }
-    
-    if (lowerMessage.includes('price') || lowerMessage.includes('cost')) {
-      return "Pricing varies by service provider and distance. I can help you get quotes from multiple providers in your area for the best rates. What type of transportation do you need?";
-    }
-    
-    if (lowerMessage.includes('help') || lowerMessage.includes('how')) {
-      return "I'm here to help! DoWhistle makes transportation simple with our 'Search on the move' platform. I can assist with bookings, finding providers, answering questions about our services, or guiding you through the platform.";
-    }
-
-    // Default response
-    return "Thank you for your message! I'm here to help with all your DoWhistle transportation needs. Whether you're looking to book a ride, find service providers, or learn about our platform, I'm ready to assist. What would you like to know?";
+  const getAIResponse = async (userMessage: string): Promise<string> => {
+    const res = await aiService.processMessage(userMessage, {});
+    return res.text;
   };
 
   const sendMessage = async () => {
@@ -125,17 +113,89 @@ export const ChatBot: React.FC<ChatBotProps> = ({
     setIsTyping(true);
 
     try {
-      const response = await simulateAIResponse(inputValue);
-      
+      // Try to parse lat/long and a simple keyword (e.g., burger)
+      const latMatch = inputValue.match(/latitude\s*([+-]?\d+(?:\.\d+)?)/i);
+      const lonMatch = inputValue.match(/longitude\s*([+-]?\d+(?:\.\d+)?)/i);
+      const foodMatch = inputValue.match(/\b(burger|pizza|coffee|cafe|restaurant|restaurants|biryani|veg|non\s*veg|dosa|idli)\b/i);
+
+      if (latMatch && lonMatch) {
+        const latitude = parseFloat(latMatch[1]);
+        const longitude = parseFloat(lonMatch[1]);
+        let keyword = '';
+        if (foodMatch) {
+          const raw = foodMatch[1].toLowerCase();
+          keyword = raw === 'restaurants' ? '' : raw === 'restaurant' ? '' : raw.replace(/\s+/g, ' ');
+        }
+
+        const mcp = getMCPClient({ serverUrl: mcpServerUrl });
+        await mcp.connect();
+        const result = await mcp.executeService('search_businesses', {
+          latitude,
+          longitude,
+          radius: 10,
+          limit: 10,
+          keyword
+        });
+
+        setIsTyping(false);
+
+        if (result.success) {
+          const data = result.data as any;
+          const providers = data?.providers || data?.data?.providers || [];
+          const total = data?.total_count ?? providers.length;
+
+          if (providers.length === 0) {
+            const botMessage: Message = {
+              id: (Date.now() + 1).toString(),
+              text: 'No nearby providers found for your search. Try increasing radius or changing the keyword.',
+              sender: 'bot',
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, botMessage]);
+            return;
+          }
+
+          const top = providers.slice(0, 3);
+          const lines = top.map((p: any, idx: number) => {
+            const name = p?.name || p?.businessName || 'Provider';
+            const km = p?.distance_km ?? p?.distanceKm ?? p?.distance ?? undefined;
+            const distanceStr = typeof km === 'number' ? ` (~${km.toFixed(1)} km)` : '';
+            return `${idx + 1}. ${name}${distanceStr}`;
+          }).join('\n');
+
+          const header = keyword
+            ? `Found ${total} result(s) for "${keyword}" near your location:`
+            : `Found ${total} nearby provider(s) near your location:`;
+
+          const botMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            text: `${header}\n\n${lines}${providers.length > 3 ? '\n\n…and more' : ''}`,
+            sender: 'bot',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, botMessage]);
+          return;
+        } else {
+          const botMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            text: `Search failed: ${result.error || 'Unknown error'}`,
+            sender: 'bot',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, botMessage]);
+          return;
+        }
+      }
+
+      // Fallback to AI if not a coordinate-based search
+      const response = await getAIResponse(inputValue);
       setIsTyping(false);
-      
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: response,
         sender: 'bot',
         timestamp: new Date()
       };
-
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       setIsTyping(false);
