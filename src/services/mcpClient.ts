@@ -346,7 +346,7 @@ export const getMCPClient = (config?: MCPConnectionConfig): MCPClient => {
     mcpClientInstance = new MCPClient(config);
   } else if (!mcpClientInstance) {
     mcpClientInstance = new MCPClient({
-      serverUrl: (import.meta as any)?.env?.VITE_MCP_SERVER_URL || 'http://localhost:8000/mcp/'
+      serverUrl: (import.meta as any)?.env?.VITE_MCP_SERVER_URL
     });
   }
   
