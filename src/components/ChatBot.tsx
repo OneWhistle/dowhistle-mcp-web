@@ -22,7 +22,7 @@ interface ChatBotProps {
 }
 
 export const ChatBot: React.FC<ChatBotProps> = ({ 
-  mcpServerUrl = (import.meta as any)?.env?.VITE_MCP_SERVER_URL || 'http://localhost:8000/mcp/',
+  mcpServerUrl = (import.meta as any)?.env?.VITE_MCP_SERVER_URL,
   isOpen: externalIsOpen,
   onOpenChange
 }) => {
