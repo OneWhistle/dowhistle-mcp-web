@@ -106,7 +106,7 @@ export default function Hero({ onStartWhistling }: HeroProps) {
 
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-8 py-12 md:px-16 md:py-20">
         {/* Top Brand Tagline */}
-        <div className="text-center mb-8">
+        {/* <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 border border-gray-200 shadow-lg">
             <div className="w-2 h-2 bg-gradient-to-r from-gray-600 to-gray-700 rounded-full animate-pulse"></div>
             <span className="text-sm font-medium text-gray-700">
@@ -118,7 +118,7 @@ export default function Hero({ onStartWhistling }: HeroProps) {
             </span>
           </div>
           <div className="mt-4 h-px w-16 opacity-30 mx-auto" style={{ background: 'linear-gradient(to right, transparent, rgba(17,24,39,0.25), transparent)' }}></div>
-        </div>
+        </div> */}
 
         {/* Main Headline */}
         <div className="mx-auto max-w-5xl text-center mb-12">
@@ -177,11 +177,11 @@ export default function Hero({ onStartWhistling }: HeroProps) {
             <span className="word" data-delay="5500">the</span>
             <span className="word" data-delay="5650">move.</span>
           </p>
-          <div className="mt-4 flex justify-center space-x-2 opacity-0" style={{ animation: 'word-appear 1s ease-out forwards', animationDelay: '5.2s' }}>
+          {/* <div className="mt-4 flex justify-center space-x-2 opacity-0" style={{ animation: 'word-appear 1s ease-out forwards', animationDelay: '5.2s' }}>
             <div className="w-2 h-2 bg-gray-500/60 rounded-full"></div>
             <div className="w-2 h-2 bg-gray-600/70 rounded-full"></div>
             <div className="w-2 h-2 bg-gray-500/60 rounded-full"></div>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -189,11 +189,11 @@ export default function Hero({ onStartWhistling }: HeroProps) {
       <div ref={gradientRef} className="pointer-events-none fixed h-96 w-96 rounded-full opacity-0 blur-3xl transition-all duration-500 ease-out" style={{ background: 'radial-gradient(circle, rgba(107,114,128,0.15) 0%, transparent 60%)' }}></div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+      {/* <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
         <div className="w-6 h-10 border-2 border-gray-300 rounded-full flex justify-center">
           <div className="w-1 h-3 bg-gray-300 rounded-full mt-2 animate-pulse"></div>
         </div>
-      </div>
+      </div> */}
 
       {/* Inline styles for keyframes and classes used by the hero */}
       <style>{`
