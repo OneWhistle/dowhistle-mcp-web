@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
+import Markdown from 'react-markdown';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageCircle, X, Send, Minimize2, Wifi, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { getAIService } from '@/services/aiService';
-import { getMCPClient } from '@/services/mcpClient';
+import { getBackendApiService } from '@/services/backendApiService';
+import { useLocationStore } from '@/stores/locationStore';
 
 interface Message {
   id: string;
@@ -26,7 +27,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({
   isOpen: externalIsOpen,
   onOpenChange
 }) => {
-  const aiService = getAIService({ apiKey: import.meta.env.VITE_OPENAI_API_KEY });
+  const backendApi = getBackendApiService();
   const [internalIsOpen, setIsInternalOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   
@@ -65,38 +66,39 @@ export const ChatBot: React.FC<ChatBotProps> = ({
     }
   }, [isOpen, isMinimized]);
 
-  // Simulate MCP connection status
+  // Check backend API connection status
   useEffect(() => {
-    const mcp = getMCPClient({ serverUrl: mcpServerUrl });
     let cancelled = false;
     (async () => {
-      const ok = await mcp.connect();
-      if (cancelled) return;
-      setIsConnected(ok);
-      if (ok) {
-        const tools = await mcp.listTools();
-        if (tools.success) {
-          // eslint-disable-next-line no-console
-          console.log('MCP tools:', tools.data);
-        } else {
-          // eslint-disable-next-line no-console
-          console.warn('Failed to list MCP tools:', tools.error);
+      try {
+        const healthCheck = await backendApi.getHealthCheck();
+        if (cancelled) return;
+        
+        // Check if the response indicates healthy status
+        const isHealthy = healthCheck.status === 'healthy' || 
+                         (healthCheck.services?.mcp === 'connected');
+        
+        setIsConnected(isHealthy);
+        
+        if (!isHealthy) {
+          toast({
+            title: "Connection Issue", 
+            description: "Backend server or MCP connection unavailable.",
+            variant: "destructive"
+          });
         }
-      } else {
+      } catch (error) {
+        if (cancelled) return;
+        setIsConnected(false);
         toast({
           title: "Connection Issue",
-          description: "Unable to connect to DoWhistle MCP server.",
+          description: "Unable to connect to DoWhistle backend server.",
           variant: "destructive"
         });
       }
     })();
     return () => { cancelled = true; };
-  }, [mcpServerUrl, toast]);
-
-  const getAIResponse = async (userMessage: string): Promise<string> => {
-    const res = await aiService.processMessage(userMessage, {});
-    return res.text;
-  };
+  }, [backendApi, toast]);
 
   const sendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -109,96 +111,47 @@ export const ChatBot: React.FC<ChatBotProps> = ({
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const messageText = inputValue;
     setInputValue('');
     setIsTyping(true);
 
     try {
-      // Try to parse lat/long and a simple keyword (e.g., burger)
-      const latMatch = inputValue.match(/latitude\s*([+-]?\d+(?:\.\d+)?)/i);
-      const lonMatch = inputValue.match(/longitude\s*([+-]?\d+(?:\.\d+)?)/i);
-      const foodMatch = inputValue.match(/\b(burger|pizza|coffee|cafe|restaurant|restaurants|biryani|veg|non\s*veg|dosa|idli)\b/i);
+      // Get location from store for context
+      const { latitude: storedLat, longitude: storedLng } = useLocationStore.getState();
+      const context = {
+        userLocation: storedLat != null && storedLng != null ? `${storedLat},${storedLng}` : undefined,
+      };
 
-      if (latMatch && lonMatch) {
-        const latitude = parseFloat(latMatch[1]);
-        const longitude = parseFloat(lonMatch[1]);
-        let keyword = '';
-        if (foodMatch) {
-          const raw = foodMatch[1].toLowerCase();
-          keyword = raw === 'restaurants' ? '' : raw === 'restaurant' ? '' : raw.replace(/\s+/g, ' ');
-        }
+      // Process message through backend API
+      const response = await backendApi.processMessage({
+        message: messageText,
+        context
+      });
 
-        const mcp = getMCPClient({ serverUrl: mcpServerUrl });
-        await mcp.connect();
-        const result = await mcp.executeService('search_businesses', {
-          latitude,
-          longitude,
-          radius: 10,
-          limit: 10,
-          keyword
-        });
-
-        setIsTyping(false);
-
-        if (result.success) {
-          const data = result.data as any;
-          const providers = data?.providers || data?.data?.providers || [];
-          const total = data?.total_count ?? providers.length;
-
-          if (providers.length === 0) {
-            const botMessage: Message = {
-              id: (Date.now() + 1).toString(),
-              text: 'No nearby providers found for your search. Try increasing radius or changing the keyword.',
-              sender: 'bot',
-              timestamp: new Date()
-            };
-            setMessages(prev => [...prev, botMessage]);
-            return;
-          }
-
-          const top = providers.slice(0, 3);
-          const lines = top.map((p: any, idx: number) => {
-            const name = p?.name || p?.businessName || 'Provider';
-            const km = p?.distance_km ?? p?.distanceKm ?? p?.distance ?? undefined;
-            const distanceStr = typeof km === 'number' ? ` (~${km.toFixed(1)} km)` : '';
-            return `${idx + 1}. ${name}${distanceStr}`;
-          }).join('\n');
-
-          const header = keyword
-            ? `Found ${total} result(s) for "${keyword}" near your location:`
-            : `Found ${total} nearby provider(s) near your location:`;
-
-          const botMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            text: `${header}\n\n${lines}${providers.length > 3 ? '\n\n…and more' : ''}`,
-            sender: 'bot',
-            timestamp: new Date()
-          };
-          setMessages(prev => [...prev, botMessage]);
-          return;
-        } else {
-          const botMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            text: `Search failed: ${result.error || 'Unknown error'}`,
-            sender: 'bot',
-            timestamp: new Date()
-          };
-          setMessages(prev => [...prev, botMessage]);
-          return;
-        }
-      }
-
-      // Fallback to AI if not a coordinate-based search
-      const response = await getAIResponse(inputValue);
       setIsTyping(false);
+
+      // Create bot response message
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: response,
+        text: response.response.text || "I'm here to help with DoWhistle services. What do you need?",
         sender: 'bot',
         timestamp: new Date()
       };
+
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       setIsTyping(false);
+      console.error('Error processing message:', error);
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "I'm having trouble responding right now. Please try again, or tell me how I can help with DoWhistle services.",
+        sender: 'bot',
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+      
       toast({
         title: "Error",
         description: "Failed to get response. Please try again.",
@@ -295,7 +248,13 @@ export const ChatBot: React.FC<ChatBotProps> = ({
                             : 'bg-chat-bubble-bot text-chat-bubble-bot-foreground'
                         }`}
                       >
-                        <p className="text-sm">{message.text}</p>
+                        {message.sender === 'bot' ? (
+                          <div className="markdown-body text-sm">
+                            <Markdown>{message.text}</Markdown>
+                          </div>
+                        ) : (
+                          <p className="text-sm">{message.text}</p>
+                        )}
                         <p className="text-xs opacity-60 mt-1">
                           {message.timestamp.toLocaleTimeString([], { 
                             hour: '2-digit', 
