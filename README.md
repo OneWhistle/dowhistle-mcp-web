@@ -2,10 +2,10 @@ Follow these steps:
 
 ```sh
 # Step 1: Clone the repository using the project's Git URL.
-git clone https://github.com/OneWhistle/dowhistle-mcp-client
+git clone https://github.com/OneWhistle/dowhistle-mcp-web
 
 # Step 2: Navigate to the project directory.
-cd dowhistle-mcp-client
+cd dowhistle-mcp-web
 
 # Step 3: Install the necessary dependencies.
 npm i
