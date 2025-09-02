@@ -1,3 +1,4 @@
+
 interface BackendApiConfig {
   baseUrl: string;
   timeout?: number;
@@ -35,6 +36,8 @@ interface ExecuteToolRequest {
 }
 
 interface ApiResponse<T = any> {
+  services: any;
+  status: string;
   success: boolean;
   data?: T;
   error?: string;
@@ -48,7 +51,7 @@ export class BackendApiService {
 
   constructor(config: BackendApiConfig) {
     this.config = {
-      timeout: 10000,
+      timeout: 60_000, // Increased to 30 seconds
       ...config
     };
   }
@@ -140,8 +143,8 @@ export class BackendApiService {
     return this.makeRequest<ApiResponse>('/api/mcp/status');
   }
 
-  async getHealthCheck(): Promise<ApiResponse> {
-    return this.makeRequest<ApiResponse>('/api/mcp/health');
+  async getHealth(): Promise<ApiResponse> {
+    return this.makeRequest<ApiResponse>('/health');
   }
 
   // Convenience methods for specific tools
