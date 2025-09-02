@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { getBackendApiService } from '@/services/backendApiService';
 import { useLocationStore } from '@/stores/locationStore';
+import { useAuthStore } from '@/stores/authStore'; // Import the new auth store
 
 interface Message {
   id: string;
@@ -69,35 +70,32 @@ export const ChatBot: React.FC<ChatBotProps> = ({
   // Check backend API connection status
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    const checkConnection = async () => {
       try {
-        const healthCheck = await backendApi.getHealthCheck();
-        if (cancelled) return;
-        
-        // Check if the response indicates healthy status
-        const isHealthy = healthCheck.status === 'healthy' || 
-                         (healthCheck.services?.mcp === 'connected');
-        
-        setIsConnected(isHealthy);
-        
-        if (!isHealthy) {
+        await backendApi.getHealth();
+        if (!cancelled) setIsConnected(true);
+      } catch (error) {
+        if (!cancelled) {
+          setIsConnected(false);
           toast({
-            title: "Connection Issue", 
-            description: "Backend server or MCP connection unavailable.",
-            variant: "destructive"
+            title: "Connection Error",
+            description: "Could not connect to the backend service.",
+            variant: "destructive",
           });
         }
-      } catch (error) {
-        if (cancelled) return;
-        setIsConnected(false);
-        toast({
-          title: "Connection Issue",
-          description: "Unable to connect to DoWhistle backend server.",
-          variant: "destructive"
-        });
       }
-    })();
-    return () => { cancelled = true; };
+    };
+
+    // Initial check
+    checkConnection();
+
+    // Set up interval for periodic checks
+    const intervalId = setInterval(checkConnection, 30000); // Check every 30 seconds
+
+    return () => { 
+      cancelled = true;
+      clearInterval(intervalId);
+    };
   }, [backendApi, toast]);
 
   const sendMessage = async () => {
@@ -115,20 +113,40 @@ export const ChatBot: React.FC<ChatBotProps> = ({
     setInputValue('');
     setIsTyping(true);
 
+    const { userId, token, setUserId, setToken } = useAuthStore.getState(); // Access auth store state and actions
+
     try {
+      backendApi.setAuth(token, userId); // <-- ensures headers are injected
+
       // Get location from store for context
       const { latitude: storedLat, longitude: storedLng } = useLocationStore.getState();
       const context = {
         userLocation: storedLat != null && storedLng != null ? `${storedLat},${storedLng}` : undefined,
+        userId: userId || undefined, // Include userId in context if available
+        accessToken: token || undefined, // Include accessToken in context if available
       };
-
+      
       // Process message through backend API
       const response = await backendApi.processMessage({
         message: messageText,
-        context
+        context,
       });
 
       setIsTyping(false);
+
+      // Handle tool execution results for authentication
+      if (response.toolExecuted && response.toolResult?.success) {
+        const toolData = response.toolResult.data?.structuredContent?.result; // Access structured content
+        const executedTool = response.response.actions?.find(a => a.type === 'mcp_tool')?.data?.tool;
+
+        if (executedTool === 'sign_in' && toolData?.user?.id) {
+          setUserId(toolData.user.id); // Save user_id to Zustand store
+          console.log('User ID saved:', toolData.user.id); // For debugging
+        } else if (executedTool === 'verify_otp' && toolData?.token) {
+          setToken(toolData.token); // Save token to Zustand store
+          console.log('Auth token saved:', toolData.token); // For debugging
+        }
+      }
 
       // Create bot response message
       const botMessage: Message = {
@@ -210,14 +228,14 @@ export const ChatBot: React.FC<ChatBotProps> = ({
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <Button
+              {/* <Button
                   variant="ghost"
                   size="sm"
                   onClick={toggleMinimize}
                   className="text-chat-header-foreground hover:bg-chat-header-foreground/10 h-8 w-8 p-0"
                 >
                   <Minimize2 className="w-4 h-4" />
-                </Button>
+                </Button> */}
                 <Button
                   variant="ghost"
                   size="sm"
